@@ -12,35 +12,53 @@ const sizes = {
  width: 800,
  height: 600
 };
+
+// global variables
+
+const hexColor = {color:0x8A3C11}
 //  image for texture link
 // const imageSource = 'http://localhost/wp/three/wp-content/themes/wpcourse/assets/three-master/Wood_Texture.jpg'
 const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
-const imageSource = `${url}/Wood_Texture.jpg`
+// const imageSource = `${url}/Wood_Texture.jpg`
    
  
 // the model link
 // const fairwellkaal = `${url}/Fairwell_kaal.gltf`
-const fairwellkaal = `${url}/Fairwell_kaal.gltf`
+const fairwellkaal = `${url}/puur2.glb`
 
-const image = new Image()
-const texture = new THREE.Texture(image)
-image.addEventListener('load', () =>
-{
-   texture.needsUpdate = true
-})
-image.src = imageSource
+/**
+ * Environment map
+ */
+ const cubTextureLoader = new THREE.CubeTextureLoader()
+ const environmentMap = cubTextureLoader.load([
+   `${url}/cubTexture/px.jpg`,
+   `${url}/cubTexture/nx.jpg`,
+   `${url}/cubTexture/py.jpg`,
+   `${url}/cubTexture/ny.jpg`,
+   `${url}/cubTexture/pz.jpg`,
+   `${url}/cubTexture/nz.jpg`
+ ])
+
 /**
 * Debug
 */
 
 const container = document.getElementById( 'container' );
 const webgl = document.querySelector( '.webgl' );// TEST LOADIN
-const stats = new Stats();
+// const stats = new Stats();
 // container.appendChild( stats.dom );
 
 const scene = new THREE.Scene();
+scene.background = environmentMap
 
-const material = new THREE.MeshBasicMaterial({map : texture});
+// const material = new THREE.MeshPhongMaterial({color: hexColor.color});
+const material = new THREE.MeshBasicMaterial();
+// const material = new THREE.MeshLambertMaterial();
+// const material = new THREE.MeshMatcapMaterial();
+// material.reflectivity = 0.5;
+// material.refractionRatio = 0.5;
+material.transparent = true
+material.color = new THREE.Color(0x684523)
 
 // loader
 const loader = new GLTFLoader();
@@ -51,10 +69,10 @@ loader.load(fairwellkaal, (gltf) => {
  // to add material for model
  model.traverse((child) =>   { child.material = material});
  
- model.position.set(0, -0.75, 0);
- model.scale.set(1, 1, 1);
- model.rotation.set(0, 90, 0);
- model.material = material;
+ model.position.set(0, -0.75, -1);
+//  model.scale.set(1, 1, 1);
+//  model.rotation.set(0, 0, 0);
+//  model.material = material;
  scene.add(model);
 
 } ,
@@ -69,12 +87,12 @@ webgl.innerHTML= 'An error happened'
 
 });
 
-const dirLight = new THREE.DirectionalLight(0xffffff);
-dirLight.position.set(3, 10, 10);
-scene.add(dirLight);
+// const dirLight = new THREE.DirectionalLight(0xffffff);
+// dirLight.position.set(3, 10, 10);
+// scene.add(dirLight);
 
-const light = new THREE.AmbientLight(0x404040); // soft white light
-scene.add(light);
+// const light = new THREE.AmbientLight(0x404040); // soft white light
+// scene.add(light);
 
 // camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
@@ -84,9 +102,10 @@ scene.add(camera);
 
 // renderer
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(sizes.width / 2, sizes.height /2);
+renderer.setSize(sizes.width , sizes.height );
 renderer.setClearColor(0xffffff, 0);
 renderer.setClearAlpha(0.5);
+renderer.outputEncoding = THREE.sRGBEncoding;
 container.appendChild( renderer.domElement );
 
 window.onresize = function () {
