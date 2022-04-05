@@ -1,3 +1,4 @@
+
 <?php
 /** 
 * Plugin Name: Three Model 
@@ -6,29 +7,33 @@
 * Version: 0.1.0
 */
 
+add_shortcode('envo_3d', function()
+{
+    
+    return '<div id="container" ></div>';
+});  
+
+function envo_wp_scripts() 
+{          
+    ?>
+    <script type="module" src="http://localhost/3dBlock/wp-content/plugins/three-test/three-master/coffinScript.js"></script>
+  <?php
+}
+
+
+
 if(!function_exists('load_three_model'))
 {
     function load_three_model()
     {
-         add_shortcode('envo_model', function()
-        {
-            function wpdocs_theme_name_scripts() 
-            {            
-            //    echo '<div class="webgl">';
-               echo '<div id="container" >';
-               echo '</div>';
-            //    echo  '</div>';
+         
+      if(shortcode_exists( 'envo_3d' )){
+        //   echo 'hello 3d';
+add_action( 'wp_enqueue_scripts', 'envo_wp_scripts' );
 
-                ?>
-
-                <script type="module" src="http://localhost/3dBlock/wp-content/plugins/three-test/three-master/coffinScript.js"></script>
-
-                <?php
-            }
-
-            add_action( 'wp_enqueue_scripts', 'wpdocs_theme_name_scripts' );
-
-        });   
+      }
+        
+       
     } 
 
     add_action('init','load_three_model');
