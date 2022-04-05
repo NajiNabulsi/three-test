@@ -1,7 +1,8 @@
 # three-test
 
-download the file
+download the files in pulgin folder
 
-##
+# installation
 
-add the short code [envo_3d]
+1- in wordpress add shortcode block
+2- then write the [envo_3d]
