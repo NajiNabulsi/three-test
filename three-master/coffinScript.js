@@ -19,6 +19,7 @@ const imageSource = `${url}/Wood_Texture.jpg`
    
  
 // the model link
+// const fairwellkaal = `${url}/Fairwell_kaal.gltf`
 const fairwellkaal = `${url}/Fairwell_kaal.gltf`
 
 const image = new Image()
@@ -59,9 +60,7 @@ loader.load(fairwellkaal, (gltf) => {
 } ,
 // called while loading is progressing
 function ( gltf ) {
- // console.log(  "webgl",webgl);
    console.log( ( gltf.loaded / gltf.total * 100 ) + '% loaded' );
-
 },
 // called when loading has errors
 function ( error ) {

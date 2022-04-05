@@ -27,14 +27,12 @@ if(!function_exists('load_three_model'))
     function load_three_model()
     {
          
-      if(shortcode_exists( 'envo_3d' )){
-        //   echo 'hello 3d';
-add_action( 'wp_enqueue_scripts', 'envo_wp_scripts' );
-
+      if(shortcode_exists( 'envo_3d' )){        
+        add_action( 'wp_enqueue_scripts', 'envo_wp_scripts' );
       }
-        
-       
+
     } 
 
     add_action('init','load_three_model');
+    
 }
