@@ -1,11 +1,17 @@
 console.log('hello coffin');
+
+// let test='<?php echo json_encode($pluginUrl) ?>'; 
+// console.log(test);
+
+var u = window.location;
+console.log('url: ',u)
+console.log('url: ',u.origin)
+
 import * as THREE from "./build/three.module.js";
 
 import { GLTFLoader } from "./examples/jsm/loaders/GLTFLoader.js";
 
 import { OrbitControls } from "./examples/jsm/controls/OrbitControls.js";
-
-import Stats from './examples/jsm/libs/stats.module.js'
 
 // sizes
 const sizes = {
@@ -14,16 +20,18 @@ const sizes = {
 };
 
 // global variables
-
 const hexColor = {color:0x8A3C11}
+
 //  image for texture link
 // const imageSource = 'http://localhost/wp/three/wp-content/themes/wpcourse/assets/three-master/Wood_Texture.jpg'
+// const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
 const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
 // const imageSource = `${url}/Wood_Texture.jpg`
    
  
 // the model link
 // const fairwellkaal = `${url}/Fairwell_kaal.gltf`
+// const fairwellkaal = `${url}/puur2.glb`
 const fairwellkaal = `${url}/puur2.glb`
 
 /**
@@ -31,6 +39,7 @@ const fairwellkaal = `${url}/puur2.glb`
  */
  const cubTextureLoader = new THREE.CubeTextureLoader()
  const environmentMap = cubTextureLoader.load([
+  
    `${url}/cubTexture/px.jpg`,
    `${url}/cubTexture/nx.jpg`,
    `${url}/cubTexture/py.jpg`,
@@ -39,26 +48,35 @@ const fairwellkaal = `${url}/puur2.glb`
    `${url}/cubTexture/nz.jpg`
  ])
 
-/**
-* Debug
-*/
-
-const container = document.getElementById( 'container' );
+ /**
+  * Dom element
+  */
+ const container = document.getElementById( 'container' );
 const webgl = document.querySelector( '.webgl' );// TEST LOADIN
 // const stats = new Stats();
 // container.appendChild( stats.dom );
 
-const scene = new THREE.Scene();
-scene.background = environmentMap
+/**
+* texture
+*/
+const matcapFhoto = `${url}/texture/metacup.jpg`
+const matcapTexture = new THREE.TextureLoader().load(matcapFhoto)
 
 // const material = new THREE.MeshPhongMaterial({color: hexColor.color});
-const material = new THREE.MeshBasicMaterial();
+// const material = new THREE.MeshBasicMaterial();
 // const material = new THREE.MeshLambertMaterial();
-// const material = new THREE.MeshMatcapMaterial();
+const material = new THREE.MeshMatcapMaterial();
 // material.reflectivity = 0.5;
 // material.refractionRatio = 0.5;
-material.transparent = true
-material.color = new THREE.Color(0x684523)
+// material.transparent = true
+// material.color = new THREE.Color(0x684523)
+material.matcap = matcapTexture;
+
+/**
+ * Scene
+ */
+const scene = new THREE.Scene();
+scene.background = environmentMap
 
 // loader
 const loader = new GLTFLoader();
@@ -69,7 +87,7 @@ loader.load(fairwellkaal, (gltf) => {
  // to add material for model
  model.traverse((child) =>   { child.material = material});
  
- model.position.set(0, -0.75, -1);
+ model.position.set(0, -0.75, 0);
 //  model.scale.set(1, 1, 1);
 //  model.rotation.set(0, 0, 0);
 //  model.material = material;
@@ -96,8 +114,9 @@ webgl.innerHTML= 'An error happened'
 
 // camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 2;
+camera.position.z = 4;
 camera.position.y = 0;
+camera.position.x = 0;
 scene.add(camera);
 
 // renderer
