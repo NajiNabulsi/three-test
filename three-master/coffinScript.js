@@ -1,11 +1,8 @@
 console.log('hello coffin');
 
-// let test='<?php echo json_encode($pluginUrl) ?>'; 
-// console.log(test);
-
-var u = window.location;
-console.log('url: ',u)
-console.log('url: ',u.origin)
+// var u = window.location;
+// console.log('url: ',u)
+// console.log('url: ',u.origin)
 
 import * as THREE from "./build/three.module.js";
 
@@ -13,113 +10,149 @@ import { GLTFLoader } from "./examples/jsm/loaders/GLTFLoader.js";
 
 import { OrbitControls } from "./examples/jsm/controls/OrbitControls.js";
 
-// sizes
+/**
+ * sizes
+ */
 const sizes = {
  width: 800,
  height: 600
 };
 
-// global variables
+/**
+ * global variables
+ */
 const hexColor = {color:0x8A3C11}
 
-//  image for texture link
-// const imageSource = 'http://localhost/wp/three/wp-content/themes/wpcourse/assets/three-master/Wood_Texture.jpg'
-// const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
+/**
+ * links for image, texture and fils
+ */
 const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
-// const imageSource = `${url}/Wood_Texture.jpg`
-   
+const imgUrl = 'http://localhost/3dBlock/wp-content/uploads/2022/04'
  
-// the model link
-// const fairwellkaal = `${url}/Fairwell_kaal.gltf`
-// const fairwellkaal = `${url}/puur2.glb`
-const fairwellkaal = `${url}/puur2.glb`
+/**
+ * the model link
+ */
+ const fairwellkaal = `${url}/puur2.glb`
 
 /**
  * Environment map
  */
- const cubTextureLoader = new THREE.CubeTextureLoader()
- const environmentMap = cubTextureLoader.load([
+//  const cubTextureLoader = new THREE.CubeTextureLoader()
+
+ /**
+  * land environment
+  */
+//  const environmentMap = cubTextureLoader.load([
   
-   `${url}/cubTexture/px.jpg`,
-   `${url}/cubTexture/nx.jpg`,
-   `${url}/cubTexture/py.jpg`,
-   `${url}/cubTexture/ny.jpg`,
-   `${url}/cubTexture/pz.jpg`,
-   `${url}/cubTexture/nz.jpg`
- ])
+//    `${imgUrl}/px.jpg`,
+//    `${imgUrl}/nx.jpg`,
+//    `${imgUrl}/py.jpg`,
+//    `${imgUrl}/ny1.jpg`,
+//    `${imgUrl}/pz.jpg`,
+//    `${imgUrl}/nz.jpg`
+//  ])
+
+/**
+  * ston environment
+*/
+//  const environmentMap = cubTextureLoader.load([
+  
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`
+//  ])
 
  /**
   * Dom element
   */
  const container = document.getElementById( 'container' );
 const webgl = document.querySelector( '.webgl' );// TEST LOADIN
-// const stats = new Stats();
-// container.appendChild( stats.dom );
 
 /**
 * texture
 */
-const matcapFhoto = `${url}/texture/metacup.jpg`
-const matcapTexture = new THREE.TextureLoader().load(matcapFhoto)
+const matcapFhoto = `${imgUrl}/metacup.jpg`
 
-// const material = new THREE.MeshPhongMaterial({color: hexColor.color});
-// const material = new THREE.MeshBasicMaterial();
-// const material = new THREE.MeshLambertMaterial();
+const sceneEnvironmentFhoto = `${imgUrl}/scene-environment-1.jpg`
+// const sceneEnvironmentFhoto = `${imgUrl}/scene-environment.jpg`
+
+const matcapTexture = new THREE.TextureLoader().load(matcapFhoto)
+const sceneEnvironment = new THREE.TextureLoader().load(sceneEnvironmentFhoto)
+
+
 const material = new THREE.MeshMatcapMaterial();
-// material.reflectivity = 0.5;
-// material.refractionRatio = 0.5;
-// material.transparent = true
-// material.color = new THREE.Color(0x684523)
 material.matcap = matcapTexture;
 
 /**
  * Scene
  */
 const scene = new THREE.Scene();
-scene.background = environmentMap
+scene.background = sceneEnvironment
+// scene.background = environmentMap
 
-// loader
+/**
+ * loader
+ */
 const loader = new GLTFLoader();
 
 loader.load(fairwellkaal, (gltf) => {
  const model = gltf.scene;
  
- // to add material for model
+ /**
+  * to add material for model
+  */
  model.traverse((child) =>   { child.material = material});
  
- model.position.set(0, -0.75, 0);
+ model.position.set(0, -1.50, 0);
 //  model.scale.set(1, 1, 1);
-//  model.rotation.set(0, 0, 0);
+ model.rotation.set(0, 0, -0.15);
 //  model.material = material;
  scene.add(model);
 
 } ,
-// called while loading is progressing
+
+/**
+ * called while loading is progressing
+ */
 function ( gltf ) {
    console.log( ( gltf.loaded / gltf.total * 100 ) + '% loaded' );
 },
-// called when loading has errors
+
+/**
+ * called when loading has errors
+ */
 function ( error ) {
 webgl.innerHTML= 'An error happened'
  console.log( 'An error happened' );
 
 });
 
+/**
+ * lights
+ */
+
 // const dirLight = new THREE.DirectionalLight(0xffffff);
-// dirLight.position.set(3, 10, 10);
+// dirLight.position.set(0, 2, 0);
 // scene.add(dirLight);
 
 // const light = new THREE.AmbientLight(0x404040); // soft white light
 // scene.add(light);
 
-// camera
+/**
+ * camera
+ */
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.z = 4;
 camera.position.y = 0;
 camera.position.x = 0;
 scene.add(camera);
 
-// renderer
+/**
+ * renderer
+ */
 const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(sizes.width , sizes.height );
 renderer.setClearColor(0xffffff, 0);
@@ -140,13 +173,19 @@ controls.enableDamping = true;
 const tick = () => {
  // const elapsedTime = clock.getElapsedTime();
 
- // Update controls
+ /**
+  * Update controls
+  */
  controls.update();
 
- // Render
+ /**
+  * Render
+  */
  renderer.render(scene, camera);
 
- // Call tick again on the next frame
+ /**
+  * Call tick again on the next frame
+  */
  window.requestAnimationFrame(tick);
 };
 

@@ -20,13 +20,7 @@ function envo_wp_scripts()
   $pluginUrl = plugins_url();
     var_dump($pluginUrl);
 
-    ?>
-     <!-- <script type="module" >
-     const exportTest = 
-     export.module exportTest;
-     console.log('exportTest: ', exportTest);
-    </script> -->
-
+  ?>
     <script type="module" src="<?php echo $pluginUrl ?>/three-test/three-master/coffinScript.js">       
     </script>
   <?php
@@ -38,15 +32,9 @@ if(!function_exists('load_three_model'))
 {
     function load_three_model()
     {
-        
-       
-         
-      if(shortcode_exists( 'envo_3d' )){        
+       if(shortcode_exists( 'envo_3d' )){        
         add_action( 'wp_enqueue_scripts', 'envo_wp_scripts' );
       }
-
     } 
-
     add_action('init','load_three_model');
-    
 }
