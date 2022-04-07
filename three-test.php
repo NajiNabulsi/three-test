@@ -17,9 +17,11 @@ add_shortcode('envo_3d', function()
 function envo_wp_scripts() 
 {          
  
+  /**
+   * get the plugin url from the theme
+   */
   $pluginUrl = plugins_url();
-    var_dump($pluginUrl);
-
+  
   ?>
     <script type="module" src="<?php echo $pluginUrl ?>/three-test/three-master/coffinScript.js">       
     </script>

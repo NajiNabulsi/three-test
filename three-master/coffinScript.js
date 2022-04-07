@@ -1,4 +1,4 @@
-console.log('hello coffin');
+console.log('coffin Model... start');
 
 // var u = window.location;
 // console.log('url: ',u)
@@ -24,7 +24,8 @@ const sizes = {
 const hexColor = {color:0x8A3C11}
 
 /**
- * links for image, texture and fils
+ * global var for links, image, texture and files
+ * to avoid broken links need to change this links to web host links
  */
 const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
 const imgUrl = 'http://localhost/3dBlock/wp-content/uploads/2022/04'
@@ -85,6 +86,8 @@ const sceneEnvironment = new THREE.TextureLoader().load(sceneEnvironmentFhoto)
 
 const material = new THREE.MeshMatcapMaterial();
 material.matcap = matcapTexture;
+// material.color = new THREE.Color('#e0ddd5')
+material.color = new THREE.Color('#E4CB8F')
 
 /**
  * Scene
@@ -106,7 +109,9 @@ loader.load(fairwellkaal, (gltf) => {
   */
  model.traverse((child) =>   { child.material = material});
  
- model.position.set(0, -1.50, 0);
+ model.position.y = -1.25;
+//  model.position.set(0, -1.25, 0);
+//  model.position.set(0, -1.50, 0);
 //  model.scale.set(1, 1, 1);
  model.rotation.set(0, 0, -0.15);
 //  model.material = material;
@@ -144,7 +149,8 @@ webgl.innerHTML= 'An error happened'
 /**
  * camera
  */
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
+// const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.z = 4;
 camera.position.y = 0;
 camera.position.x = 0;
@@ -153,22 +159,32 @@ scene.add(camera);
 /**
  * renderer
  */
+// global variable to set the size of the window
+const reSize = 1.5
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(sizes.width , sizes.height );
+renderer.setSize(window.innerWidth /reSize , window.innerHeight/reSize );
+// renderer.setSize(sizes.width, sizes.height );
+// renderer.setSize(sizes.width /2, sizes.height/2 );
 renderer.setClearColor(0xffffff, 0);
 renderer.setClearAlpha(0.5);
 renderer.outputEncoding = THREE.sRGBEncoding;
 container.appendChild( renderer.domElement );
 
 window.onresize = function () {
- camera.aspect = window.innerWidth / window.innerHeight;
+ camera.aspect = window.innerWidth / window.innerHeight ;
  camera.updateProjectionMatrix();
-
-//  renderer.setSize(window.innerWidth, window.innerHeight);
+ renderer.setSize(window.innerWidth /reSize , window.innerHeight/reSize );
 };
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.enableZoom = false
+
+controls.maxPolarAngle = 0
+controls.minPolarAngle =  1.5
+
+controls.autoRotate = true
+controls.autoRotateSpeed = 1.5
 
 const tick = () => {
  // const elapsedTime = clock.getElapsedTime();
