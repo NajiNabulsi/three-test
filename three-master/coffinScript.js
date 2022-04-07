@@ -93,7 +93,8 @@ material.color = new THREE.Color('#E4CB8F')
  * Scene
  */
 const scene = new THREE.Scene();
-scene.background = sceneEnvironment
+// scene.setClearColor(0xFDF8EF,1)
+// scene.background = sceneEnvironment
 // scene.background = environmentMap
 
 /**
@@ -102,18 +103,25 @@ scene.background = sceneEnvironment
 const loader = new GLTFLoader();
 
 loader.load(fairwellkaal, (gltf) => {
+  console.log('gltf: ',gltf);
  const model = gltf.scene;
- 
+model.children[0].traverse((n) =>{
+ n.castShadow = true
+ n.receiveShadow = true
+})
+
  /**
   * to add material for model
   */
  model.traverse((child) =>   { child.material = material});
+//  model.traverse((child) =>   { child.Mesh.castShadow = true});
  
  model.position.y = -1.25;
 //  model.position.set(0, -1.25, 0);
 //  model.position.set(0, -1.50, 0);
 //  model.scale.set(1, 1, 1);
  model.rotation.set(0, 0, -0.15);
+ model.castShadow = true
 //  model.material = material;
  scene.add(model);
 
@@ -136,12 +144,54 @@ webgl.innerHTML= 'An error happened'
 });
 
 /**
+ * CircleGeometry
+ */
+// const geometry = new THREE.PlaneBufferGeometry( 20,20 );
+const geometry = new THREE.CircleBufferGeometry( 10,20 );
+const circleMaterial = new THREE.MeshBasicMaterial( { color: 0xFDF8EF } );
+// circleMaterial.side = THREE.DoubleSide
+const floor = new THREE.Mesh( geometry, circleMaterial );
+floor.receiveShadow = true
+
+// floor.rotateY(90)
+floor.rotation.x = 300
+// floor.rotation.y = 180
+floor.rotation.z = 0
+floor.position.y = -2
+// floor.rotateZ(90)
+scene.add( floor );
+
+/**
+ * test
+ */
+// const geometry = new THREE.PlaneBufferGeometry( 20,20 );
+const geo = new THREE.BoxGeometry( 1, 1, 1 );
+const geoMaterial = new THREE.MeshBasicMaterial( {color: 'red'} );
+const cube = new THREE.Mesh( geo, geoMaterial );
+cube.castShadow = true
+scene.add( cube );
+
+/**
  * lights
  */
+ var spotLight = new THREE.SpotLight( 'red' );
+ spotLight.position.set( 500, 500, 500 );
+ spotLight.castShadow = true;
+//  spotLight.shadowCameraVisible = true;
+ 
 
-// const dirLight = new THREE.DirectionalLight(0xffffff);
-// dirLight.position.set(0, 2, 0);
-// scene.add(dirLight);
+ spotLight.shadow.mapSize.height = 100;
+ spotLight.shadow.mapSize.width = 100;
+ scene.add( spotLight );
+
+ const spotLightHelper = new THREE.SpotLightHelper( spotLight );
+scene.add( spotLightHelper );
+
+
+const dirLight = new THREE.DirectionalLight(0xffffff);
+dirLight.position.set(0, 2, 0);
+dirLight.castShadow = true
+scene.add(dirLight);
 
 // const light = new THREE.AmbientLight(0x404040); // soft white light
 // scene.add(light);
@@ -165,9 +215,13 @@ const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth /reSize , window.innerHeight/reSize );
 // renderer.setSize(sizes.width, sizes.height );
 // renderer.setSize(sizes.width /2, sizes.height/2 );
-renderer.setClearColor(0xffffff, 0);
-renderer.setClearAlpha(0.5);
+renderer.setClearColor(0xFDF8EF, 1);
+// renderer.setClearAlpha(0.5);
 renderer.outputEncoding = THREE.sRGBEncoding;
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 container.appendChild( renderer.domElement );
 
 window.onresize = function () {
