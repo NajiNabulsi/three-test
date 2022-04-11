@@ -19,14 +19,14 @@ const sizes = {
 };
 
 /**
- * global variables
- */
-const hexColor = { color: 0x8a3c11 };
-
-/**
  * global var for links, image, texture and files
  * to avoid broken links need to change this links to web host links
  */
+// office url
+//  const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
+//  const imgUrl = 'http://localhost/3dBlock/wp-content/uploads/2022/04'
+
+//Home url
 const url =
   "http://localhost/code/wp/dynamicList/wp-content/plugins/three-test/three-master";
 const imgUrl =
@@ -73,6 +73,12 @@ const fairwellkaal = `${url}/puur2.glb`;
   */
 const container = document.getElementById("container");
 const webgl = document.querySelector(".webgl"); // TEST LOADIN
+/**
+ * Materials
+ */
+
+const StandardMaterial = new THREE.MeshStandardMaterial();
+StandardMaterial.roughness = 0.7;
 
 /**
 * texture
@@ -85,10 +91,10 @@ const sceneEnvironmentFhoto = `${imgUrl}/scene-environment-1.jpg`;
 const matcapTexture = new THREE.TextureLoader().load(matcapFhoto);
 const sceneEnvironment = new THREE.TextureLoader().load(sceneEnvironmentFhoto);
 
-const material = new THREE.MeshMatcapMaterial();
-material.matcap = matcapTexture;
+const matcapMaterial = new THREE.MeshMatcapMaterial();
+matcapMaterial.matcap = matcapTexture;
 // material.color = new THREE.Color('#e0ddd5')
-material.color = new THREE.Color("#E4CB8F");
+matcapMaterial.color = new THREE.Color("#E4CB8F");
 
 /**
  * Scene
@@ -117,17 +123,12 @@ loader.load(
   * to add material for model
   */
     model.traverse(child => {
-      child.material = material;
+      child.material = matcapMaterial;
     });
     //  model.traverse((child) =>   { child.Mesh.castShadow = true});
 
     model.position.y = -1.25;
-    //  model.position.set(0, -1.25, 0);
-    //  model.position.set(0, -1.50, 0);
-    //  model.scale.set(1, 1, 1);
     model.rotation.set(0, 0, -0.15);
-    model.castShadow = true;
-    //  model.material = material;
     scene.add(model);
   },
   /**
@@ -146,55 +147,28 @@ loader.load(
 );
 
 /**
- * CircleGeometry
+ * Floor ( CircleGeometry )
  */
-// const geometry = new THREE.PlaneBufferGeometry( 20,20 );
-const geometry = new THREE.CircleBufferGeometry(10, 20);
-const circleMaterial = new THREE.MeshBasicMaterial({ color: 0xfdf8ef });
-// circleMaterial.side = THREE.DoubleSide
-const floor = new THREE.Mesh(geometry, circleMaterial);
+
+const floor = new THREE.Mesh(
+  new THREE.CircleBufferGeometry(10, 20),
+  StandardMaterial
+);
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.y = -2.25;
 floor.receiveShadow = true;
-
-// floor.rotateY(90)
-floor.rotation.x = 300;
-// floor.rotation.y = 180
-floor.rotation.z = 0;
-floor.position.y = -2;
-// floor.rotateZ(90)
 scene.add(floor);
-
-/**
- * test
- */
-// const geometry = new THREE.PlaneBufferGeometry( 20,20 );
-const geo = new THREE.BoxGeometry(1, 1, 1);
-const geoMaterial = new THREE.MeshBasicMaterial({ color: "red" });
-const cube = new THREE.Mesh(geo, geoMaterial);
-cube.castShadow = true;
-scene.add(cube);
 
 /**
  * lights
  */
-var spotLight = new THREE.SpotLight("red");
-spotLight.position.set(500, 500, 500);
-spotLight.castShadow = true;
-//  spotLight.shadowCameraVisible = true;
-
-spotLight.shadow.mapSize.height = 100;
-spotLight.shadow.mapSize.width = 100;
-scene.add(spotLight);
-
-const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(spotLightHelper);
-
 const dirLight = new THREE.DirectionalLight(0xffffff);
-dirLight.position.set(0, 2, 0);
+dirLight.position.set(1, 2, 1);
 dirLight.castShadow = true;
 scene.add(dirLight);
 
-// const light = new THREE.AmbientLight(0x404040); // soft white light
-// scene.add(light);
+const light = new THREE.AmbientLight(0x404040); // soft white light
+scene.add(light);
 
 /**
  * camera
@@ -204,7 +178,7 @@ const camera = new THREE.PerspectiveCamera(
   window.innerWidth / window.innerHeight
 );
 // const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 4;
+camera.position.z = 3.5;
 camera.position.y = 0;
 camera.position.x = 0;
 scene.add(camera);
@@ -216,10 +190,7 @@ scene.add(camera);
 const reSize = 1.5;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth / reSize, window.innerHeight / reSize);
-// renderer.setSize(sizes.width, sizes.height );
-// renderer.setSize(sizes.width /2, sizes.height/2 );
 renderer.setClearColor(0xfdf8ef, 1);
-// renderer.setClearAlpha(0.5);
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 renderer.shadowMap.enabled = true;

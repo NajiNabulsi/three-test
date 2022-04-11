@@ -1,0 +1,188 @@
+console.log("coffin Model... start");
+
+// var u = window.location;
+// console.log('url: ',u)
+// console.log('url: ',u.origin)
+
+import * as THREE from "./build/three.module.js";
+
+import { GLTFLoader } from "./examples/jsm/loaders/GLTFLoader.js";
+
+import { OrbitControls } from "./examples/jsm/controls/OrbitControls.js";
+
+/**
+ * sizes
+ */
+const sizes = {
+  width: 800,
+  height: 600
+};
+
+/**
+ * global variables
+ */
+const hexColor = { color: 0x8a3c11 };
+
+/**
+ * global var for links, image, texture and files
+ * to avoid broken links need to change this links to web host links
+ */
+const url =
+  "http://localhost/code/wp/dynamicList/wp-content/plugins/three-test/three-master";
+const imgUrl =
+  "http://localhost/code/wp/dynamicList/wp-content/uploads/2022/04";
+
+/**
+ * the model link
+ */
+const fairwellkaal = `${url}/puur2.glb`;
+
+const container = document.getElementById("container");
+const webgl = document.querySelector(".webgl"); // TEST LOADIN
+
+// Scene
+const scene = new THREE.Scene();
+
+/**
+ * Lights
+ */
+// Ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// Directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(2, 2, -1);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+/**
+ * Materials
+ */
+
+const material = new THREE.MeshStandardMaterial();
+material.roughness = 0.7;
+
+const matcapFhoto = `${imgUrl}/metacup.jpg`;
+const matcapTexture = new THREE.TextureLoader().load(matcapFhoto);
+const matcapMaterial = new THREE.MeshMatcapMaterial();
+matcapMaterial.matcap = matcapTexture;
+// matcapMaterial.color = new THREE.Color('#e0ddd5')
+matcapMaterial.color = new THREE.Color("#E4CB8F");
+
+const loader = new GLTFLoader();
+
+loader.load(
+  fairwellkaal,
+  gltf => {
+    const model = gltf.scene;
+    model.children[0].traverse(n => {
+      n.castShadow = true;
+    });
+
+    /**
+  * to add material for model
+  */
+    model.traverse(child => {
+      child.material = matcapMaterial;
+    });
+    //  model.traverse((child) =>   { child.Mesh.castShadow = true});
+
+    model.position.y = -0.5;
+    //  model.position.set(0, -1.25, 0);
+    //  model.position.set(0, -1.50, 0);
+    //  model.scale.set(1, 1, 1);
+    model.rotation.set(0, 0, -0.15);
+    model.castShadow = true;
+    //  model.material = material;
+    scene.add(model);
+  },
+  /**
+ * called while loading is progressing
+ */
+  function(gltf) {
+    console.log(gltf.loaded / gltf.total * 100 + "% loaded");
+  },
+  /**
+ * called when loading has errors
+ */
+  function(error) {
+    webgl.innerHTML = "An error happened";
+    console.log("An error happened");
+  }
+);
+/**
+ * Objects
+ */
+
+const floor = new THREE.Mesh(new THREE.CircleBufferGeometry(10, 20), material);
+floor.rotation.x = -Math.PI * 0.5;
+floor.position.y = -0.75;
+floor.receiveShadow = true;
+scene.add(floor);
+
+/**
+ * renderer
+ */
+// global variable to set the size of the window
+const reSize = 1.5;
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth / reSize, window.innerHeight / reSize);
+// renderer.setSize(sizes.width, sizes.height );
+// renderer.setSize(sizes.width /2, sizes.height/2 );
+renderer.setClearColor(0xfdf8ef, 1);
+// renderer.setClearAlpha(0.5);
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+container.appendChild(renderer.domElement);
+
+window.onresize = function() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth / reSize, window.innerHeight / reSize);
+};
+
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
+  0.1,
+  100
+);
+camera.position.x = 0;
+camera.position.y = 0;
+camera.position.z = 3.5;
+scene.add(camera);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.enableZoom = false;
+
+controls.maxPolarAngle = 0;
+controls.minPolarAngle = 1.5;
+
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.5;
+
+const tick = () => {
+  // const elapsedTime = clock.getElapsedTime();
+
+  /**
+  * Update controls
+  */
+  controls.update();
+
+  /**
+  * Render
+  */
+  renderer.render(scene, camera);
+
+  /**
+  * Call tick again on the next frame
+  */
+  window.requestAnimationFrame(tick);
+};
+
+tick();
