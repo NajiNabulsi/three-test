@@ -1,3 +1,6 @@
+/**
+* old script for old coffin
+ */
 console.log("coffin Model... start");
 
 // var u = window.location;
@@ -19,14 +22,14 @@ const sizes = {
 };
 
 /**
- * global variables
- */
-const hexColor = { color: 0x8a3c11 };
-
-/**
  * global var for links, image, texture and files
  * to avoid broken links need to change this links to web host links
  */
+// office url
+//  const url = 'http://localhost/3dBlock/wp-content/plugins/three-test/three-master'
+//  const imgUrl = 'http://localhost/3dBlock/wp-content/uploads/2022/04'
+
+//Home url
 const url =
   "http://localhost/code/wp/dynamicList/wp-content/plugins/three-test/three-master";
 const imgUrl =
@@ -37,47 +40,86 @@ const imgUrl =
  */
 const fairwellkaal = `${url}/puur2.glb`;
 
-const container = document.getElementById("container");
-const webgl = document.querySelector(".webgl"); // TEST LOADIN
-
-// Scene
-const scene = new THREE.Scene();
+/**
+ * Environment map
+ */
+//  const cubTextureLoader = new THREE.CubeTextureLoader()
 
 /**
- * Lights
- */
-// Ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+  * land environment
+  */
+//  const environmentMap = cubTextureLoader.load([
 
-// Directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(2, 2, -1);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
+//    `${imgUrl}/px.jpg`,
+//    `${imgUrl}/nx.jpg`,
+//    `${imgUrl}/py.jpg`,
+//    `${imgUrl}/ny1.jpg`,
+//    `${imgUrl}/pz.jpg`,
+//    `${imgUrl}/nz.jpg`
+//  ])
 
+/**
+  * ston environment
+*/
+//  const environmentMap = cubTextureLoader.load([
+
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`,
+//    `${imgUrl}/nx1.jpg`
+//  ])
+
+/**
+  * Dom element
+  */
+const container = document.getElementById("container");
+const webgl = document.querySelector(".webgl"); // TEST LOADIN
 /**
  * Materials
  */
 
-const material = new THREE.MeshStandardMaterial();
-material.roughness = 0.7;
+const StandardMaterial = new THREE.MeshStandardMaterial();
+StandardMaterial.roughness = 0.7;
 
+/**
+* texture
+*/
 const matcapFhoto = `${imgUrl}/metacup.jpg`;
+
+const sceneEnvironmentFhoto = `${imgUrl}/scene-environment-1.jpg`;
+// const sceneEnvironmentFhoto = `${imgUrl}/scene-environment.jpg`
+
 const matcapTexture = new THREE.TextureLoader().load(matcapFhoto);
+const sceneEnvironment = new THREE.TextureLoader().load(sceneEnvironmentFhoto);
+
 const matcapMaterial = new THREE.MeshMatcapMaterial();
 matcapMaterial.matcap = matcapTexture;
-// matcapMaterial.color = new THREE.Color('#e0ddd5')
+// material.color = new THREE.Color('#e0ddd5')
 matcapMaterial.color = new THREE.Color("#E4CB8F");
 
+/**
+ * Scene
+ */
+const scene = new THREE.Scene();
+// scene.setClearColor(0xFDF8EF,1)
+// scene.background = sceneEnvironment
+// scene.background = environmentMap
+
+/**
+ * loader
+ */
 const loader = new GLTFLoader();
 
 loader.load(
   fairwellkaal,
   gltf => {
+    console.log("gltf: ", gltf);
     const model = gltf.scene;
     model.children[0].traverse(n => {
       n.castShadow = true;
+      n.receiveShadow = true;
     });
 
     /**
@@ -88,13 +130,8 @@ loader.load(
     });
     //  model.traverse((child) =>   { child.Mesh.castShadow = true});
 
-    model.position.y = -0.5;
-    //  model.position.set(0, -1.25, 0);
-    //  model.position.set(0, -1.50, 0);
-    //  model.scale.set(1, 1, 1);
+    model.position.y = -1.25;
     model.rotation.set(0, 0, -0.15);
-    model.castShadow = true;
-    //  model.material = material;
     scene.add(model);
   },
   /**
@@ -111,15 +148,43 @@ loader.load(
     console.log("An error happened");
   }
 );
+
 /**
- * Objects
+ * Floor ( CircleGeometry )
  */
 
-const floor = new THREE.Mesh(new THREE.CircleBufferGeometry(10, 20), material);
+const floor = new THREE.Mesh(
+  new THREE.CircleBufferGeometry(10, 20),
+  StandardMaterial
+);
 floor.rotation.x = -Math.PI * 0.5;
-floor.position.y = -0.75;
+floor.position.y = -2.25;
 floor.receiveShadow = true;
 scene.add(floor);
+
+/**
+ * lights
+ */
+const dirLight = new THREE.DirectionalLight(0xffffff);
+dirLight.position.set(1, 2, 1);
+dirLight.castShadow = true;
+scene.add(dirLight);
+
+const light = new THREE.AmbientLight(0x404040); // soft white light
+scene.add(light);
+
+/**
+ * camera
+ */
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight
+);
+// const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
+camera.position.z = 3.5;
+camera.position.y = 0;
+camera.position.x = 0;
+scene.add(camera);
 
 /**
  * renderer
@@ -128,10 +193,7 @@ scene.add(floor);
 const reSize = 1.5;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth / reSize, window.innerHeight / reSize);
-// renderer.setSize(sizes.width, sizes.height );
-// renderer.setSize(sizes.width /2, sizes.height/2 );
 renderer.setClearColor(0xfdf8ef, 1);
-// renderer.setClearAlpha(0.5);
 renderer.outputEncoding = THREE.sRGBEncoding;
 
 renderer.shadowMap.enabled = true;
@@ -144,17 +206,6 @@ window.onresize = function() {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth / reSize, window.innerHeight / reSize);
 };
-
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
-camera.position.x = 0;
-camera.position.y = 0;
-camera.position.z = 3.5;
-scene.add(camera);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
