@@ -6,33 +6,38 @@
 * Author: Naji Nabulsi
 * Version: 0.1.0
 */
+global $pluginUrl ;
 
+/** shot code function  */
 add_shortcode('envo_3d', function()
 {
     
     return '<div id="container" ></div>';
 });  
 
-function envo_wp_scripts() 
+function envo_scripts() 
 {          
-    ?>
-    <script type="module" src="http://localhost/3dBlock/wp-content/plugins/three-test/three-master/coffinScript.js"></script>
-  <?php
+  /** global var to get the posts from wordepress rest api */
+  global $post;
+ 
+  /** get the plugin url from the theme */
+  $pluginUrl = plugins_url();
+  
+  if (is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'envo_3d') ) {
+    ?>    
+    <script type="module" src="<?php echo $pluginUrl ?>/three-test/three-master/coffinScript.js">       
+    </script>
+    <?php    
+  }
 }
+add_action( 'wp_footer', 'envo_scripts' );
 
-
-
-if(!function_exists('load_three_model'))
-{
-    function load_three_model()
-    {
-         
-      if(shortcode_exists( 'envo_3d' )){        
-        add_action( 'wp_enqueue_scripts', 'envo_wp_scripts' );
-      }
-
-    } 
-
-    add_action('init','load_three_model');
-    
-}
+/** initialize plugin */
+// if(!function_exists('load_three_model'))
+// {
+//     function load_three_model()
+//     {
+       
+//     } 
+//     add_action('init','load_three_model');
+// }
